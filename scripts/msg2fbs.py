@@ -12,10 +12,8 @@ import os
 import re
 import sys
 
-import rospy
 # from rosbridge_library.internal.ros_loader import get_message_class
 from roslib.message import get_message_class
-import roslib
 
 # place all message namespaces within this namespace
 BASE_NS = "fbb"
@@ -101,23 +99,45 @@ class Type:
         return full_name
 
     def is_defined(self, defined_types):
-        """ Determine whether the given ROS type has been defined for Flatbuffers """
+        """ Determine whether this type has been defined for Flatbuffers """
         return self.fbs_type_name() in defined_types
 
 def gen_metadata_item():
+    """ Generate a table field containing a MsgMetadata. """ 
     yield "  __metadata:MsgMetadata;"
 
 def gen_table(msg_type, items, defined_types):
-    """ Generate namespaced .fbs table for given name, type pairs. """
-    yield "namespace {};".format("{}.{}".format(BASE_NS, msg_type.namespace))
+    """ Generate a table for given name, type pairs. """
     yield "table {} {{".format(msg_type.name)
     yield from gen_metadata_item()
     for k, v in items:
         yield "  {}:{};".format(k, v.fbs_type())
     yield "}"
 
-def gen_msg(msg_type, defined_types):
-    """ Generate .fbs definitions for a ROS message type, including dependencies. """
+def gen_enums(msg_type: Type):
+    """
+    Generate enums to represent ROS message constants.
+
+    Enums are Flatbuffers' closest approximation of constants. We generate one
+    enum per constant, with a single field "value". Only integer types are 
+    supported by Flatbuffers.
+    """
+
+    from msg_util import get_msg_spec # in case the module breaks, don't break this whole script
+    spec = get_msg_spec(msg_type.ros_type)
+    # https://google.github.io/flatbuffers/flatbuffers_guide_writing_schema.html
+    allowed_enum_types = {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"}
+    for c in spec.constants:
+        if c.type in allowed_enum_types:
+            yield "enum {} : {} {{ value = {} }}".format(c.name, c.type, c.val)
+
+def gen_msg(msg_type, defined_types, *, enums=False):
+    """ 
+    Generate .fbs definitions for a ROS message type, including dependencies. 
+    
+    Pass enums=True to run gen_enums()
+    """
+
     # no need to generate already-defined type
     if msg_type.is_defined(defined_types):
         raise RuntimeError("Type already generated: {}".format(msg_type.ros_type))
@@ -125,6 +145,7 @@ def gen_msg(msg_type, defined_types):
 
     msg_class = get_message_class(msg_type.ros_type)
 
+    # this is officially suggested by http://wiki.ros.org/msg#Client_Library_Support
     name = msg_class._type
     keys = msg_class.__slots__
     types = [Type(name) for name in msg_class._slot_types]
@@ -134,15 +155,18 @@ def gen_msg(msg_type, defined_types):
         if not t.is_defined(defined_types):
             yield from gen_msg(t, defined_types)
     
-    # generate table definition
+    # generate type definition
+    yield "namespace {};".format("{}.{}".format(BASE_NS, msg_type.namespace))
+    if enums:
+        yield from gen_enums(msg_type)
     yield from gen_table(msg_type, zip(keys, types), defined_types)
 
-def generate_schema(msg_type_names):
+def generate_schema(msg_type_names, *, enums=False):
     """ Generate Flatbuffers .fbs schema for several ROS message types, including dependencies. """
     defined_types = set(base_defined_types)
     yield from gen_support()
     for msg_type_name in msg_type_names:
-        yield from gen_msg(Type(msg_type_name), defined_types)
+        yield from gen_msg(Type(msg_type_name), defined_types, enums=enums)
 
 if __name__ == "__main__":
     ap = ArgumentParser("msg2fbs.py", description=__doc__)
@@ -150,6 +174,8 @@ if __name__ == "__main__":
         help="ROS names specifying which messages to generate (e.g. std_msgs/String)")
     ap.add_argument("--output-file", "-o", nargs="?", default=None,
         help="Specify an output file. Otherwise, the schema is written to stdout.")
+    ap.add_argument("--gen-enums", "-e", action="store_true",
+        help="Generate enums for (un)signed integer-type ROS message constants")
     ns = ap.parse_args()
     
     if ns.output_file is None:
@@ -157,6 +183,6 @@ if __name__ == "__main__":
     else:
         output_file = open(ns.output_file, "w+")
     
-    lines = generate_schema(ns.message_type)
+    lines = generate_schema(ns.message_type, enums=ns.gen_enums)
     output_file.writelines(line + os.linesep for line in lines)
     output_file.close()
