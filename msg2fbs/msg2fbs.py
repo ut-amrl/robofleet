@@ -15,8 +15,7 @@ import sys
 # from rosbridge_library.internal.ros_loader import get_message_class
 from roslib.message import get_message_class
 
-# place all message namespaces within this namespace
-BASE_NS = "fbb"
+BASE_NS = "fb" # base namespace of all definitions
 
 # types that are already defined in Flatbuffers
 primitive_types = {
@@ -43,14 +42,14 @@ base_defined_types = {
     "RosDuration"
 }
 
-def gen_metadata_item(*, args):
+def gen_metadata_item():
     """ Generate a table field containing a MsgMetadata. """ 
-    yield "  __metadata:{}.MsgMetadata;".format(args.base_namespace)
+    yield "  __metadata:{}.MsgMetadata;".format(BASE_NS)
 
-def gen_support(*, args):
+def gen_support():
     """ Generate supporting definitions """
     # Namespace everything
-    yield "namespace {};".format(args.base_namespace)
+    yield "namespace {};".format(BASE_NS)
 
     # Metadata table for all messages, to support RoboFleet
     yield "table MsgMetadata {"
@@ -59,7 +58,7 @@ def gen_support(*, args):
 
     # All generated messages can be read as MsgWithMetadata to access metadata
     yield "table MsgWithMetadata {"
-    yield from gen_metadata_item(args=args)
+    yield from gen_metadata_item()
     yield "}"
 
     # ROS time primitives
@@ -99,16 +98,22 @@ class Type:
         self.name = match.group(2)
         self.is_array = match.group(3) is not None
     
+    def full_namespace(self):
+        """ Namespace including base namespace """
+        if self.namespace is None:
+            return BASE_NS
+        return "{}.{}".format(BASE_NS, self.namespace)
+    
     def fbs_type_name(self):
         """ Fully qualified Flatbuffers type name with remapping """
         if self.namespace is not None:
-            n = "{}.{}".format(self.namespace, self.name)
+            n = "{}.{}.{}".format(BASE_NS, self.namespace, self.name)
         else: 
             n = self.name
         return type_remap(n)
     
     def fbs_type(self):
-        """ Fully qualified Flatbuffers type with remapping """
+        """ Fully qualified Flatbuffers type (including array syntax) """
         full_name = self.fbs_type_name()
         if self.is_array:
             return "[{}]".format(full_name)
@@ -117,11 +122,15 @@ class Type:
     def is_defined(self, defined_types):
         """ Determine whether this type has been defined for Flatbuffers """
         return self.fbs_type_name() in defined_types
+    
+    def mark_defined(self, defined_types):
+        """ Add this type to defined types set """
+        defined_types.add(self.fbs_type_name())
 
-def gen_table(msg_type, items, defined_types, *, args):
+def gen_table(msg_type, items, defined_types):
     """ Generate a table for given name, type pairs. """
     yield "table {} {{".format(msg_type.name)
-    yield from gen_metadata_item(args=args)
+    yield from gen_metadata_item()
     for k, v in items:
         yield "  {}:{};".format(k, v.fbs_type())
     yield "}"
@@ -141,7 +150,8 @@ def gen_constants_enums(msg_type: Type):
     allowed_enum_types = {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"}
     for c in spec.constants:
         if c.type in allowed_enum_types:
-            yield "enum {} : {} {{ value = {} }}".format(c.name, c.type, c.val)
+            # name is converted to lower case to avoid all-uppercase camelCase in, e.g. JS code
+            yield "enum {} : {} {{ value = {} }}".format(c.name.lower(), c.type, c.val)
 
 def gen_constants_table(msg_type: Type):
     """
@@ -158,11 +168,16 @@ def gen_constants_table(msg_type: Type):
 
     from msg_util import get_msg_spec # in case the module breaks, don't break this whole script
     spec = get_msg_spec(msg_type.ros_type)
+
+    if len(spec.constants) == 0:
+        return
+
     yield "table {}Constants {{".format(msg_type.name)
     for c in spec.constants:
         t = Type(c.type)
         if t.fbs_type() in primitive_types:
-            yield "  {}:{} = {};".format(c.name, t.fbs_type(), c.val_text)
+            # name is converted to lower case to avoid all-uppercase camelCase in, e.g. JS code
+            yield "  {}:{} = {};".format(c.name.lower(), t.fbs_type(), c.val_text)
     yield "}"
 
 def gen_msg(msg_type, defined_types, *, args):
@@ -173,7 +188,7 @@ def gen_msg(msg_type, defined_types, *, args):
     # no need to generate already-defined type
     if msg_type.is_defined(defined_types):
         raise RuntimeError("Type already generated: {}".format(msg_type.ros_type))
-    defined_types.add(msg_type.fbs_type_name())
+    msg_type.mark_defined(defined_types)
 
     msg_class = get_message_class(msg_type.ros_type)
 
@@ -188,17 +203,17 @@ def gen_msg(msg_type, defined_types, *, args):
             yield from gen_msg(t, defined_types, args=args)
     
     # generate type definition
-    yield "namespace {};".format("{}.{}".format(args.base_namespace, msg_type.namespace))
+    yield "namespace {};".format(msg_type.full_namespace())
     if args.gen_enums:
         yield from gen_constants_enums(msg_type)
     if args.gen_constants:
         yield from gen_constants_table(msg_type)
-    yield from gen_table(msg_type, zip(keys, types), defined_types, args=args)
+    yield from gen_table(msg_type, zip(keys, types), defined_types)
 
 def generate_schema(msg_type_names, *, args):
     """ Generate Flatbuffers .fbs schema for several ROS message types, including dependencies. """
     defined_types = set(base_defined_types)
-    yield from gen_support(args=args)
+    yield from gen_support()
     for msg_type_name in msg_type_names:
         yield from gen_msg(Type(msg_type_name), defined_types, args=args)
 

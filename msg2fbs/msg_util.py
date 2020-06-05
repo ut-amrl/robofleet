@@ -7,7 +7,7 @@ import genmsg
 This module retrieves ROS MsgSpecs by message type.
 This is the only way I know of to get the types of message constants.
 
-rosmsg.get_msg_text() *almost* does this, but converts the message to text.
+rosmsg.get_msg_text() *almost* does this, but converts the MsgSpec to text.
 These library functions are based on its implementation.
 """
 
