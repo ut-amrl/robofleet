@@ -40,17 +40,27 @@ base_defined_types = {
     "RosDuration"
 }
 
+def gen_metadata_item():
+    """ Generate a table field containing a MsgMetadata. """ 
+    yield "  __metadata:MsgMetadata;"
+
 def gen_support():
-    # supporting definitions
+    """ Generate supporting definitions """
+    # Metadata table for all messages, to support RoboFleet
     yield "table MsgMetadata {"
     yield "  topic:string;"
     yield "}"
 
+    # All generated messages can be read as MsgWithMetadata to access metadata
+    yield "table MsgWithMetadata {"
+    yield from gen_metadata_item()
+    yield "}"
+
+    # ROS time primitives
     yield "struct RosTime {"
     yield "  secs:uint32;"
     yield "  nsecs:uint32;"
     yield "}"
-
     yield "struct RosDuration {"
     yield "  secs:int32;"
     yield "  nsecs:int32;"
@@ -101,10 +111,6 @@ class Type:
     def is_defined(self, defined_types):
         """ Determine whether this type has been defined for Flatbuffers """
         return self.fbs_type_name() in defined_types
-
-def gen_metadata_item():
-    """ Generate a table field containing a MsgMetadata. """ 
-    yield "  __metadata:MsgMetadata;"
 
 def gen_table(msg_type, items, defined_types):
     """ Generate a table for given name, type pairs. """
