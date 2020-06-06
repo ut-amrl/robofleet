@@ -23,6 +23,7 @@ We also add metadata fields to each generated message type. Metadata is required
 * Identification of message type
 * Identification of which client sent the message
 
+Details about generated schemas:
 * Namespaces message tables: `sensor_msgs/NavSatFix` -> `base_namespace.sensor_msgs.NavSatFix`
     * `base_namespace` avoids conflict with ROS types, and is configurable
 * Generates one `table` for each message type
