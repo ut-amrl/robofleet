@@ -15,8 +15,6 @@ import sys
 # from rosbridge_library.internal.ros_loader import get_message_class
 from roslib.message import get_message_class
 
-BASE_NS = "fb" # base namespace of all definitions
-
 # types that are already defined in Flatbuffers
 primitive_types = {
     "bool",
@@ -230,6 +228,9 @@ if __name__ == "__main__":
     ap.add_argument("--gen-constants", "-c", action="store_true",
         help="Generate ROS message constants as tables with default values")
     ns = ap.parse_args()
+
+    global BASE_NS
+    BASE_NS = ns.base_namespace 
     
     if ns.output_file is None:
         output_file = sys.stdout
