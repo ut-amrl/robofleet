@@ -6,39 +6,63 @@ This enables the use of Flatbuffers to serialize and deserialize an arbitrary se
 
 ## Example usage
 
-1. `./msg2fbs.py --gen-constants -o schema.fbs std_msgs/String sensor_msgs/NavSatFix`
+1. `./msg2fbs.py --gen-enums -o schema.fbs amrl_msgs/RobofleetStatus sensor_msgs/NavSatFix`
     * Generates definitions for the two given message types, as well as any dependencies
     * Generates tables with values for constants for each message type
     * **Note** that all desired message types should be generated into a single schema
-2. `flatc --gen-object-api -c -T schema.fbs`
+    * **Note** that you must set `ROS_PACKAGE_PATH` as noted in the amrl_msgs README to use `amrl_msgs` messages.
+2. `flatc --gen-object-api --no-fb-import -c -T schema.fbs`
     * Generates Flatbuffers code for both C++ and TypeScript, with the Object API enabled
     * `schema_generated.h` and `schema_generated.ts` are then included and used in other projects
+    * **Note** that we use the TypeScript generator, which emits `namespace` definitions that are not supported by Babel, and therefore by `create-react-app` applications. These files can only be compiled by `tsc` (or `ts-loader`) directly.
 
 ## Details
 
 The basic idea of this project is to convert arbitrary ROS message definitions to Flatbuffers schemas, for wire encoding of ROS messages.
 
-We also add metadata fields to each generated message type. Metadata is required to support various features of RoboFleet. Currently, we encode the message topic, which allows:
+We also add metadata fields to the start of each generated message type. Metadata is required to support various features of RoboFleet. Since Flatbuffers supports backward-compatibility of message schemas, we can read the metadata fields without knowing the specific type of the message. Currently, we encode the message topic, which allows:
 * Subscription to messages for a particular topic
 * Identification of message type
 * Identification of which client sent the message
 
-Details about generated schemas:
-* Namespaces message tables: `sensor_msgs/NavSatFix` -> `base_namespace.sensor_msgs.NavSatFix`
-    * `base_namespace` avoids conflict with ROS types, and is configurable
-* Generates one `table` for each message type
-    * Contains all message fields
-    * Automatically generates message types that are dependencies
-    * Optionally generates an extra table `MsgTypeConstants` for each `MsgType`
-        * Encodes any ROS message constants as Flatbuffers table fields with default values
-        * Uses a potentially-unstable ROS API, isolated to `msg_util.py`
-* Generates metadata definitions
-    * `table MsgMetadata` - metadata table for all messages
-        * Inserts a `__metadata: MsgMetadata` field at the start of each table, allowing metadata inspection for any message type
-    * `table MsgWithMetadata` - a "base class" containing only the `__metadata` field, for accessing metadata of arbitrary message type
-* Generates supporting definitions
-    * `struct RosTime` - represents ROS `Time`s, with `secs` and `nsecs`
-    * `struct RosDuration` - represents ROS `Duration`s, with `secs` and `nsecs`
+### Namespaces
+
+Each definition is namespaced based on its ROS name, for example: `sensor_msgs/NavSatFix` ⇒ `base_namespace.sensor_msgs.NavSatFix`.
+
+`base_namespace` avoids conflict with ROS types, and is configurable.
+
+### Message types
+
+`msg2fbs` generates one `table` for each ROS message type.
+* Contains a `__metadata` field
+* Contains all ROS message fields
+
+If a ROS message includes other ROS messages in its fields, these dependencies are also generated.
+
+### Metadata
+
+`msg2fbs` generates a `table MsgMetadata` definition in the base namespace. A `__metadata: MsgMetadata` field is inserted at the start of each table.
+
+`msg2fbs` also generates a "base class" table called `MsgWithMetadata`. It contains only the `__metadata` field. Any type of message can be interpreted as a `MsgWithMetadata`.
+
+### ROS msg constants
+
+`msg2fbs` can optionally encode ROS message constants using one of the following modes:
+* Enums mode: generates an enum type for each constant for each `MsgType`, namespaced in `MsgTypeConstants`
+    * Only supports integral constants
+    * Access is easier: in JS: `fb.sensor_msgs.NavSatStatusConstants.status_no_fix.value`
+* Constant table mode: generates a table `MsgTypeConstants` for each `MsgType`
+    * Encodes any ROS message constants as Flatbuffers table fields with default values
+    * Access is more annoying: in JS: `fb.sensor_msgs.NavSatStatusConstants.getRootAsNavSatStatusConstants(new flatbuffers.ByteBuffer(new Uint8Array())).statusNoFix()`
+* Note that ROS default values are currently generated as constants. If it seems useful, it may be possible to differentiate them from constants and generate actual default values in the output schemas.
+
+This generator uses a potentially-unstable ROS API, isolated to `msg_util.py`.
+
+### Supporting definitions
+
+`msg2fbs` generates the following definitions to support all message types:
+* `struct RosTime` - represents ROS `Time`s, with `secs` and `nsecs`
+* `struct RosDuration` - represents ROS `Duration`s, with `secs` and `nsecs`
 
 ## Backwards Compatibility
 

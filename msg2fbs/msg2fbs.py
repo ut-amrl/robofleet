@@ -46,6 +46,7 @@ def gen_metadata_item():
 
 def gen_support():
     """ Generate supporting definitions """
+    yield "// *** begin supporting definitions ***"
     # Namespace everything
     yield "namespace {};".format(BASE_NS)
 
@@ -68,6 +69,7 @@ def gen_support():
     yield "  secs:int32;"
     yield "  nsecs:int32;"
     yield "}"
+    yield "// *** end supporting definitions ***"
 
 # direct ROS to Flatbuffers type remappings
 type_mapping = {
@@ -144,12 +146,21 @@ def gen_constants_enums(msg_type: Type):
 
     from msg_util import get_msg_spec # in case the module breaks, don't break this whole script
     spec = get_msg_spec(msg_type.ros_type)
+
+    if len(spec.constants) == 0:
+        return
+
+    yield "namespace {}.{}Constants;".format(msg_type.full_namespace(), msg_type.name)
+    
     # https://google.github.io/flatbuffers/flatbuffers_guide_writing_schema.html
     allowed_enum_types = {"int8", "int16", "int32", "int64", "uint8", "uint16", "uint32", "uint64"}
+    
     for c in spec.constants:
         if c.type in allowed_enum_types:
             # name is converted to lower case to avoid all-uppercase camelCase in, e.g. JS code
             yield "enum {} : {} {{ value = {} }}".format(c.name.lower(), c.type, c.val)
+        else:
+            print("Warning: skipped non-integral constant {}.{}".format(msg_type.fbs_type(), c.name), file=sys.stderr)
 
 def gen_constants_table(msg_type: Type):
     """
@@ -170,12 +181,15 @@ def gen_constants_table(msg_type: Type):
     if len(spec.constants) == 0:
         return
 
+    yield "namespace {};".format(msg_type.full_namespace())
     yield "table {}Constants {{".format(msg_type.name)
     for c in spec.constants:
         t = Type(c.type)
         if t.fbs_type() in primitive_types:
             # name is converted to lower case to avoid all-uppercase camelCase in, e.g. JS code
             yield "  {}:{} = {};".format(c.name.lower(), t.fbs_type(), c.val_text)
+        else:
+            raise RuntimeError("Invalid non-primitive constant")
     yield "}"
 
 def gen_msg(msg_type, defined_types, *, args):
@@ -200,12 +214,14 @@ def gen_msg(msg_type, defined_types, *, args):
         if not t.is_defined(defined_types):
             yield from gen_msg(t, defined_types, args=args)
     
-    # generate type definition
-    yield "namespace {};".format(msg_type.full_namespace())
+    # generate constants definitions
     if args.gen_enums:
         yield from gen_constants_enums(msg_type)
     if args.gen_constants:
         yield from gen_constants_table(msg_type)
+
+    # generate type definition
+    yield "namespace {};".format(msg_type.full_namespace())
     yield from gen_table(msg_type, zip(keys, types), defined_types)
 
 def generate_schema(msg_type_names, *, args):
