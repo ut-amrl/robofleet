@@ -8,7 +8,7 @@ This enables the use of Flatbuffers to serialize and deserialize an arbitrary se
 
 1. `./msg2fbs.py --gen-enums -o schema.fbs amrl_msgs/RobofleetStatus sensor_msgs/NavSatFix`
     * Generates definitions for the two given message types, as well as any dependencies
-    * Generates tables with values for constants for each message type
+    * Generates enums with values for constants for each message type
     * **Note** that all desired message types should be generated into a single schema
     * **Note** that you must set `ROS_PACKAGE_PATH` as noted in the amrl_msgs README to use `amrl_msgs` messages.
 2. `flatc --gen-object-api --no-fb-import -c -T schema.fbs`
