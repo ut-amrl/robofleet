@@ -20,10 +20,10 @@ This enables the use of Flatbuffers to serialize and deserialize an arbitrary se
 
 The basic idea of this project is to convert arbitrary ROS message definitions to Flatbuffers schemas, for wire encoding of ROS messages.
 
-We also add metadata fields to the start of each generated message type. Metadata is required to support various features of RoboFleet. Since Flatbuffers supports backward-compatibility of message schemas, we can read the metadata fields without knowing the specific type of the message. Currently, we encode the message topic, which allows:
-* Subscription to messages for a particular topic
-* Identification of message type
-* Identification of which client sent the message
+We also add metadata fields to the start of each generated message type. Metadata is required to support various features of RoboFleet. Since Flatbuffers supports backward-compatibility of message schemas, we can read the metadata fields without knowing the specific type of the message. Currently, we encode two metadata fields:
+* `type` - the ROS name of the message type, e.g. `sensor_msgs/NavSatFix`
+* `topic` - the topic of the message, e.g. `/navsat/fix`
+* Both fields are needed because we include in the message topic a namespace for each robot.
 
 ### Namespaces
 

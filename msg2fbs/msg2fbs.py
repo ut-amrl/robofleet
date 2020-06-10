@@ -52,6 +52,7 @@ def gen_support():
 
     # Metadata table for all messages, to support RoboFleet
     yield "table MsgMetadata {"
+    yield "  type:string;"
     yield "  topic:string;"
     yield "}"
 
