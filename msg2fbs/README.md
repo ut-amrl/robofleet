@@ -4,6 +4,10 @@ This utility is designed to generate a [Flatbuffers][flatbuffers] [schema][fbs] 
 
 This enables the use of Flatbuffers to serialize and deserialize an arbitrary set of ROS messages in many languages.
 
+## Updating flatbuffers code
+
+A `makefile` is provided which automatically generates Flatbuffers code and copies it into each Robofleet component. The message types it generates can be edited in the `makefile`. Just run `make` to update generated code.
+
 ## Example usage
 
 1. `./msg2fbs.py --gen-enums -o schema.fbs amrl_msgs/RobofleetStatus sensor_msgs/NavSatFix`
