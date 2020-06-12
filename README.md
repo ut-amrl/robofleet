@@ -39,11 +39,36 @@ Most development tasks are isolated to each component of Robofleet. However, the
 
 ### Add a message type
 
-**Unstable** This section is subject to significant change.
+**Unstable** This section is subject to change. See _Future changes_. 
 
-**TODO**
+To exchange ROS messages over the network, with support for message metadata and unusual kinds of clients (such as the browser), Robofleet needs a structured message encoding format. Robofleet currently encodes messages using [Flatbuffers][flatbuffers]. For details on how ROS messages are encoded in Flatbuffers, see the `README` for `msg2fbs`.
 
+Imagine that you want to visualize some new message type, `my_viz/Marker`. Follow these steps:
+1. `cd msg2fbs`
+    1. Add the ROS name of the message type to the top of the `makefile`.
+    2. If your message is in a local ROS package (e.g. `amrl_msgs`), ensure that the package is in `ROS_PACKAGE_PATH`.
+        * For example, `export ROS_PACKAGE_PATH=~/robofleet/robofleet_client/amrl_msgs:$ROS_PACKAGE_PATH`
+            * This might not work for catkin packages
+    3. Run `make`. This generates code and copies it into each Robofleet component.
+2. `cd ../robofleet_client`
+    1. Modify `src/main.cpp` to call `register_msg_type()` for the new ROS message type
+    2. Specialize `encode()` in `encode.hpp` and `decode()` in `decode.hpp`
+3. `cd ../robofleet_webviz`
+    1. See existing code for examples of accessing message data
+
+#### Future changes
+
+When JavaScript support for [Flexbuffers][flexbuffers] is [added][flexbuffers js], it would be possible to switch from Flatbuffers to Flexbuffers encoding fairly seamlessly. This would:
+* Eliminate the need to maintain a schema and generated code
+* Allow the encoding of all message types automatically by the robot client*
+    * handling dynamically-typed ROS messages in C++ is probably possible [using ShapeShifter][generic subscriber] and [ros_msg_parser][ros_msg_parser] (formerly ros_type_introspection)
+* Move the burden of schema conformance into application code (no schemas means implicit schemas, defined by how message fields are accessed in code.)
 
 [namespaces]: http://wiki.ros.org/Names#Names-1
 [remapping]: http://wiki.ros.org/Remapping%20Arguments
 [relative names]: http://wiki.ros.org/Names#Resolving
+[flatbuffers]: https://google.github.io/flatbuffers/
+[flexbuffers]: https://google.github.io/flatbuffers/flexbuffers.html
+[flexbuffers js]: https://github.com/google/flatbuffers/issues/5949
+[generic subscriber]: http://wiki.ros.org/ros_type_introspection/Tutorials/GenericTopicSubscriber 
+[ros_msg_parser]: https://github.com/facontidavide/ros_msg_parser
