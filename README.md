@@ -1,5 +1,11 @@
 # Robofleet
 
+This project aims to create a system that enables [ROS][ros]-based robot-to-robot communication, as well as visualization of robot data via a web-based frontend. Robots will run a client application to exchange data with a central server.
+
+Each physical robot has existing control software, which publishes messages to the robot’s [ROS topics][ros topics]. The Robofleet client will exchange these existing messages with the Robofleet server. Using Robofleet, this software may also subscribe to ROS topics for information from other robots or control messages.
+
+This project targets the ROS 1 framework.
+
 ## Usage
 
 You will need to set up different components of Robofleet depending on your use case.
@@ -63,6 +69,8 @@ When JavaScript support for [Flexbuffers][flexbuffers] is [added][flexbuffers js
     * handling dynamically-typed ROS messages in C++ is probably possible [using ShapeShifter][generic subscriber] and [ros_msg_parser][ros_msg_parser] (formerly ros_type_introspection)
     * `msg2fbs` demonstrates how to encode arbitrary message types using `rospy`
 
+[ros]: https://www.ros.org/
+[ros topics]: http://wiki.ros.org/Topics
 [namespaces]: http://wiki.ros.org/Names#Names-1
 [remapping]: http://wiki.ros.org/Remapping%20Arguments
 [relative names]: http://wiki.ros.org/Names#Resolving
