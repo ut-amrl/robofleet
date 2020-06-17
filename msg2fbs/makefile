@@ -1,6 +1,7 @@
 # make sure to escape newlines
 MSG_TYPES=\
 	amrl_msgs/RobofleetStatus\
+	amrl_msgs/Localization2DMsg\
 	sensor_msgs/NavSatFix\
 	nav_msgs/Odometry\
 # this line intentionally left blank
