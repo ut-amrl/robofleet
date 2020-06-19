@@ -41,24 +41,43 @@ You will need to set up different components of Robofleet depending on your use 
 
 Most development tasks are isolated to each component of Robofleet. However, there are some tasks that require coordination across all components.
 
-### Add a message type
+### Add a new message type (~30 mins)
 
 **Unstable** This section is subject to change. See _Future changes_. 
 
 To exchange ROS messages over the network, with support for message metadata and unusual kinds of clients (such as the browser), Robofleet needs a structured message encoding format. Robofleet currently encodes messages using [Flatbuffers][flatbuffers]. For details on how ROS messages are encoded in Flatbuffers, see the `README` for `msg2fbs`.
 
-Imagine that you want to visualize some new message type, `my_viz/Marker`. Follow these steps:
+Imagine that you want to visualize some new message type, `my_viz/Marker`. First, build each of the Robofleet components as explained in each of their `README` files. Then, follow these steps:
 1. `cd msg2fbs`
-    1. Add the ROS name of the message type to the top of the `makefile`.
-    2. If your message is in a local ROS package (e.g. `amrl_msgs`), ensure that the package is in `ROS_PACKAGE_PATH`.
-        * For example, `export ROS_PACKAGE_PATH=~/robofleet/robofleet_client/amrl_msgs:$ROS_PACKAGE_PATH`
-            * This might not work for catkin packages; install them instead.
-    3. Run `make`. This generates code and copies it into each Robofleet component.
+   1. Add `amrl_msgs` to `ROS_PACKAGE_PATH`; after ensuring that it is built:
+      `export ROS_PACKAGE_PATH=../robofleet_client/amrl_msgs:$ROS_PACKAGE_PATH`
+      1. If your new message type is also in a local (not installed) package, make sure that it is also in your path.
+   2. Add the ROS name of the message type (e.g. `my_viz/Marker`) to the top of the `makefile`
+   3. `make` to generate code and copy it into each Robofleet component.
 2. `cd ../robofleet_client`
-    1. Modify `src/main.cpp` to call `register_msg_type()` for the new ROS message type
-    2. Specialize `encode()` in `encode.hpp` and `decode()` in `decode.hpp`
-3. `cd ../robofleet_webviz`
-    1. See existing code for examples of handling messages
+   1. Edit `src/config.hpp` to call `register_msg_type()` once per message type and topic, as shown in the example configuration. 
+      For example: `register_msg_type<my_vis::Marker>("my/topic")`
+      Remember to include the ROS headers for your new message type.
+   2. Edit `encode.hpp` to specialize `encode<>()` for your new message type. See other implementations for examples. 
+      * It helps to set up autocompletion in your editor.
+      * Robofleet only uses the `metadata` attribute on the root message type. For example, if `my_viz/Marker` contains a `std_msgs/String`, you can set the `metadata` attribute of the `std_msgs/String` to null.
+      * Make sure to call `fbb.Finish()`, passing in the result of creating the root message type, as seen in existing examples.
+   3. Edit `decode.hpp` to specialize `decode<>()` for your new message type.
+   4. `make` to test your changes
+      * Linker errors generally indicate that you did not correctly specialize `encode<>()` or `decode<>()`.
+   5. `make format` to clean up your code
+   6. Commit the changes.
+3. `cd ../robofleet_server`
+   1. `yarn build` to test the new schema code.
+   2. Commit the changes.
+4. `cd ../robofleet_webviz`
+   1. `yarn build` to test the new schema code.
+   2. Commit the changes.
+5. `cd ..`
+   1. Add the updated submodule commits and the changes to `msg2fbs`.
+   2. Commit the changes.
+
+All done! Now, you can consume the new message type in `robofleet_webviz`, as well as transmit and receive it with the `robofleet_client`.
 
 #### Future changes
 
