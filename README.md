@@ -13,7 +13,7 @@ You will need to set up different components of Robofleet depending on your use 
 ### Add a robot
 
 `robofleet_client` enables a robot to exchange ROS messages with `robofleet_server`. To set up a new robot with Robofleet:
-1. `git clone --recursive robofleet_client` and follow the build instructions in its `README` file
+1. Clone recursively `robofleet_client` and follow the build instructions in its `README` file
 2. Choose a [ROS Namespace][namespaces] for the robot.
 3. Extend an existing ROS node to publish `amrl_msgs/RobofleetStatus` messages to the `status` topic. This will list your robot in the web visualizer, though it is not strictly necessary.
     * Alternatively, use `robofleet_client/scripts/basic_status.py` to quickly list your robot.
