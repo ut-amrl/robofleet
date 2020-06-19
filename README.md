@@ -20,16 +20,16 @@ You will need to set up different components of Robofleet depending on your use 
 4. Run your existing ROS nodes within the namespace--see [ROS Name Remapping][remapping]. The simplest method is to set the `ROS_NAMESPACE` environment variable.
     * Ensure that your ROS nodes are using [relative names][relative names] and not absolute names internally.
 5. Run the `robofleet_client` in the same namespace (e.g. `ROS_NAMESPACE="/x/y/z" make run`)
-* **Unstable:** currently, `robofleet_client` sends and receives all supported ROS message types. In the future, configuration will be possible.
-* **Unstable:** currently, `robofleet_server` does not perform authentication. In the future, it will be necessary to set permissions for the robot.
-* **Unstable:** currently, `robofleet_server` simply broadcasts each message to all clients. In the future, it will be possible to subscribe to messages on particular topics from other clients.
+6. Grant your robot permissions in the config file for `robofleet_server`
+
+* **Unstable:** currently, `robofleet_client` receives all ROS messages of any given type. You can configure which message types it handles and which topics it transmits in its configuration file.
+* **Unstable:** currently, `robofleet_server` simply broadcasts each message to all authorized clients. In the future, it will be possible to subscribe to messages on particular topics from other clients, rather than receiving on all topics.
 
 ### Run the server
 
 `robofleet_server` enables broadcasting of ROS messages between many clients (robots and visualizers) over the network. To run the server:
 1. Clone `robofleet_server` and follow the build instructions in its `README` file
 2. Start the server with `yarn start`
-3. **Unstable:** currently, `robofleet_server` simply broadcasts messages to all clients. In the future, permission configuration will be necessary.
 
 ### Use the web visualizer
 
@@ -56,7 +56,7 @@ Imagine that you want to visualize some new message type, `my_viz/Marker`. First
    3. `make` to generate code and copy it into each Robofleet component.
 2. `cd ../robofleet_client`
    1. Edit `src/config.hpp` to call `register_msg_type()` once per message type and topic, as shown in the example configuration. 
-      For example: `register_msg_type<my_vis::Marker>("my/topic")`
+      For example: `register_msg_type<my_viz::Marker>("my/topic")`
       Remember to include the ROS headers for your new message type.
    2. Edit `encode.hpp` to specialize `encode<>()` for your new message type. See other implementations for examples. 
       * It helps to set up autocompletion in your editor.
