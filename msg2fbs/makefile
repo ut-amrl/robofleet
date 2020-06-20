@@ -4,6 +4,7 @@ MSG_TYPES=\
 	amrl_msgs/Localization2DMsg\
 	sensor_msgs/NavSatFix\
 	sensor_msgs/LaserScan\
+	sensor_msgs/CompressedImage\
 	nav_msgs/Odometry\
 # this line intentionally left blank
 
