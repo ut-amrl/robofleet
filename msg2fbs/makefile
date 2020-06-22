@@ -10,8 +10,7 @@ MSG_TYPES=\
 # this line intentionally left blank
 
 # if you have flatbuffers installed, you can change this path
-FLATC=build/flatbuffers/flatc
-FLATC_FLAGS=--gen-object-api --no-fb-import
+FLATC?=build/flatbuffers/flatc
 
 .SUFFIXES: # disable default rules
 
@@ -35,10 +34,10 @@ schema.fbs:
 	./msg2fbs.py -e -o schema.fbs $(MSG_TYPES)
 
 schema_generated.h: schema.fbs $(FLATC)
-	$(FLATC) $(FLATC_FLAGS) -c schema.fbs
+	$(FLATC) --gen-object-api --no-fb-import -c schema.fbs
 
 schema_generated.ts: schema.fbs $(FLATC)
-	$(FLATC) $(FLATC_FLAGS) -T schema.fbs
+	$(FLATC) --no-fb-import -T schema.fbs
 
 build/flatbuffers/flatc: build/flatbuffers/Makefile
 	(cd build/flatbuffers; make -j flatc)
