@@ -24,9 +24,6 @@ Make sure to clone submodules, using `git clone --recursive https://github.com/u
 5. Run the `robofleet_client` in the same namespace (e.g. `ROS_NAMESPACE="/x/y/z" make run`)
 6. Grant your robot permissions in the config file for `robofleet_server`
 
-* **Unstable:** currently, `robofleet_client` receives all ROS messages of any given type. You can configure which message types it handles and which topics it transmits in its configuration file.
-* **Unstable:** currently, `robofleet_server` simply broadcasts each message to all authorized clients. In the future, it will be possible to subscribe to messages on particular topics from other clients, rather than receiving on all topics.
-
 ### Run the server
 
 `robofleet_server` enables broadcasting of ROS messages between many clients (robots and visualizers) over the network. To run the server:
