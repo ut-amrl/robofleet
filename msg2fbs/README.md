@@ -8,6 +8,8 @@ This enables the use of Flatbuffers to serialize and deserialize an arbitrary se
 
 A `makefile` is provided which automatically generates Flatbuffers code and copies it into each Robofleet component. The message types it generates can be edited in the `makefile`. Just run `make` to update generated code.
 
+The `makefile` also builds the required `flatc` binary from Flatbuffers source included in the `flatbuffers` submodule using CMake.
+
 ## Example usage
 
 1. `./msg2fbs.py --gen-enums -o schema.fbs amrl_msgs/RobofleetStatus sensor_msgs/NavSatFix`

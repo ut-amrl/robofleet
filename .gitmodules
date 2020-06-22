@@ -11,3 +11,6 @@
 	url = https://github.com/ut-amrl/robofleet_webviz
 	branch = master
 
+[submodule "msg2fbs/flatbuffers"]
+	path = msg2fbs/flatbuffers
+	url = https://github.com/google/flatbuffers

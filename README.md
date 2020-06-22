@@ -10,6 +10,8 @@ This project targets the ROS 1 framework.
 
 You will need to set up different components of Robofleet depending on your use case.
 
+Make sure to clone submodules, using `git clone --recursive https://github.com/ut-amrl/robofleet`.
+
 ### Add a robot
 
 `robofleet_client` enables a robot to exchange ROS messages with `robofleet_server`. To set up a new robot with Robofleet:

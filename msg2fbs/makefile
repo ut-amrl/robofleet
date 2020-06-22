@@ -1,6 +1,7 @@
 # make sure to escape newlines
 MSG_TYPES=\
 	amrl_msgs/RobofleetStatus\
+	amrl_msgs/RobofleetSubscription\
 	amrl_msgs/Localization2DMsg\
 	sensor_msgs/NavSatFix\
 	sensor_msgs/LaserScan\
@@ -8,6 +9,8 @@ MSG_TYPES=\
 	nav_msgs/Odometry\
 # this line intentionally left blank
 
+# if you have flatbuffers installed, you can change this path
+FLATC=build/flatbuffers/flatc
 FLATC_FLAGS=--gen-object-api --no-fb-import
 
 .SUFFIXES: # disable default rules
@@ -19,6 +22,7 @@ all: update_schemas
 clean:
 	-rm -f *_generated.*
 	-rm -f schema.fbs
+	-rm -rf build
 
 .PHONY: update_schemas
 update_schemas: schema_generated.h schema_generated.ts
@@ -30,8 +34,15 @@ update_schemas: schema_generated.h schema_generated.ts
 schema.fbs:
 	./msg2fbs.py -e -o schema.fbs $(MSG_TYPES)
 
-schema_generated.h: schema.fbs
-	flatc $(FLATC_FLAGS) -c schema.fbs
+schema_generated.h: schema.fbs $(FLATC)
+	$(FLATC) $(FLATC_FLAGS) -c schema.fbs
 
-schema_generated.ts: schema.fbs
-	flatc $(FLATC_FLAGS) -T schema.fbs
+schema_generated.ts: schema.fbs $(FLATC)
+	$(FLATC) $(FLATC_FLAGS) -T schema.fbs
+
+build/flatbuffers/flatc: build/flatbuffers/Makefile
+	(cd build/flatbuffers; make -j flatc)
+
+build/flatbuffers/Makefile: flatbuffers/CMakeLists.txt
+	mkdir -p build/flatbuffers
+	(cd build/flatbuffers; cmake ../../flatbuffers)
