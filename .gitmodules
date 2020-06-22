@@ -1,9 +1,13 @@
 [submodule "robofleet_client"]
 	path = robofleet_client
 	url = https://github.com/ut-amrl/robofleet_client
+	branch = master
 [submodule "robofleet_server"]
 	path = robofleet_server
 	url = https://github.com/ut-amrl/robofleet_server
+	branch = master
 [submodule "robofleet_webviz"]
 	path = robofleet_webviz
 	url = https://github.com/ut-amrl/robofleet_webviz
+	branch = master
+
