@@ -88,16 +88,32 @@ class Type:
     """
     Represents a data type. Constructed from a ROS type string.
     Produces Flatbuffers type strings.
+
+    Note on array syntax: We generate Flatbuffers *vectors*, rather than
+    *arrays*. Therefore, we simply ignore any array length specified by the
+    ROS definition.
     """
     def __init__(self, ros_type):
-        match = re.match(r"^(?:([\w\/]+)\/)?(\w+)(\[\d*\])?$", ros_type)
-        self.ros_type = ros_type
-        if match.group(1) is not None:
-            self.namespace = match.group(1).replace("/", ".")
+        match = re.match(r"^(?P<type>(?:(?P<ns>[\w\/]+)\/)?(?P<name>\w+))(?P<array>\[\d*\])?$", ros_type)
+        if match is None:
+            raise RuntimeError("Invalid ROS type: {}".format(ros_type))
+
+        # the fully-qualified ROS type, including array syntax if any
+        self.ros_type_raw = ros_type
+
+        # the fully-qualified ROS type, without any array syntax
+        self.ros_type = match.group("type")
+
+        if match.group("ns") is not None:
+            self.namespace = match.group("ns").replace("/", ".")
         else:
             self.namespace = None
-        self.name = match.group(2)
-        self.is_array = match.group(3) is not None
+
+        # the unqualified name of this type
+        self.name = match.group("name")
+
+        # is this an array type?
+        self.is_array = match.group("array") is not None
     
     def full_namespace(self):
         """ Namespace including base namespace """
@@ -204,6 +220,8 @@ def gen_msg(msg_type, defined_types, *, args):
     msg_type.mark_defined(defined_types)
 
     msg_class = get_message_class(msg_type.ros_type)
+    if msg_class is None:
+        raise RuntimeError("ROS Message type {} not found".format(msg_type.ros_type))
 
     # this is officially suggested by http://wiki.ros.org/msg#Client_Library_Support
     name = msg_class._type
