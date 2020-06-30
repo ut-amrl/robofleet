@@ -15,8 +15,8 @@ import sys
 # from rosbridge_library.internal.ros_loader import get_message_class
 from roslib.message import get_message_class
 
-# types that are already defined in Flatbuffers
-primitive_types = {
+# Flatbuffers types considered "scalar"
+scalar_types = {
     "bool",
     "int8",
     "int16",
@@ -28,8 +28,14 @@ primitive_types = {
     "uint64",
     "float32",
     "float64",
+}
+
+# types that are already defined in Flatbuffers
+primitive_types = {
+    *scalar_types,
     "string",
 }
+
 base_defined_types = {
     # all of these Flatbuffers primitives directly correspond to ROS types
     *primitive_types,
@@ -149,7 +155,12 @@ def gen_table(msg_type, items, defined_types):
     yield "table {} {{".format(msg_type.name)
     yield from gen_metadata_item()
     for k, v in items:
-        yield "  {}:{};".format(k, v.fbs_type())
+        attrs = ""
+        # mark all non-scalar fields "required" (since they are in ROS)
+        if v.fbs_type() not in scalar_types:
+            attrs = " (required)"
+         
+        yield "  {}:{}{};".format(k, v.fbs_type(), attrs)
     yield "}"
 
 def gen_constants_enums(msg_type: Type):
@@ -221,7 +232,7 @@ def gen_msg(msg_type, defined_types, *, args):
 
     msg_class = get_message_class(msg_type.ros_type)
     if msg_class is None:
-        raise RuntimeError("ROS Message type {} not found".format(msg_type.ros_type))
+        raise RuntimeError("ROS Message type {} not found. Ensure any necessary packages are on your path.".format(msg_type.ros_type))
 
     # this is officially suggested by http://wiki.ros.org/msg#Client_Library_Support
     name = msg_class._type
