@@ -3,6 +3,7 @@ MSG_TYPES=\
 	amrl_msgs/RobofleetStatus\
 	amrl_msgs/RobofleetSubscription\
 	amrl_msgs/Localization2DMsg\
+	amrl_msgs/VisualizationMsg\
 	sensor_msgs/NavSatFix\
 	sensor_msgs/LaserScan\
 	sensor_msgs/CompressedImage\
