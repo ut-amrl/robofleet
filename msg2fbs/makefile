@@ -10,6 +10,9 @@ MSG_TYPES=\
 	nav_msgs/Odometry\
 # this line intentionally left blank
 
+# change this if your ROS install uses python 3
+PYTHON?=/usr/bin/python2
+
 # if you have flatbuffers installed, you can change this path
 FLATC?=build/flatbuffers/flatc
 
@@ -32,7 +35,7 @@ update_schemas: schema_generated.h schema_generated.ts
 
 .PHONY: schema.fbs # always rebuild in case message types change
 schema.fbs:
-	./msg2fbs.py -e -o schema.fbs $(MSG_TYPES)
+	$(PYTHON) msg2fbs.py -e -o schema.fbs $(MSG_TYPES)
 
 schema_generated.h: schema.fbs $(FLATC)
 	$(FLATC) --gen-object-api --no-fb-import -c schema.fbs
