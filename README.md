@@ -1,5 +1,7 @@
 # Robofleet
 
+![Overview diagram](https://github.com/ut-amrl/robofleet/blob/1fa0a7acb2895eed4e452c627a4d8cc2d26e241f/overview_diagram.png)
+
 This project aims to create a system that enables [ROS][ros]-based robot-to-robot communication, as well as visualization of robot data via a web-based frontend. Robots will run a client application to exchange data with a central server.
 
 Each physical robot has existing control software, which publishes messages to the robot’s [ROS topics][ros topics]. The Robofleet client will exchange these existing messages with the Robofleet server. Using Robofleet, this software may also subscribe to ROS topics for information from other robots or control messages.
