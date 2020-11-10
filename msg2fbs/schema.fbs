@@ -1,0 +1,214 @@
+// *** begin supporting definitions ***
+namespace fb;
+table MsgMetadata {
+  type:string;
+  topic:string;
+}
+table MsgWithMetadata {
+  __metadata:fb.MsgMetadata;
+}
+struct RosTime {
+  secs:uint32;
+  nsecs:uint32;
+}
+struct RosDuration {
+  secs:int32;
+  nsecs:int32;
+}
+// *** end supporting definitions ***
+namespace fb.amrl_msgs;
+table RobofleetStatus {
+  __metadata:fb.MsgMetadata;
+  status:string (required);
+  is_ok:bool;
+  battery_level:float32;
+  location:string (required);
+}
+namespace fb.amrl_msgs.RobofleetSubscriptionConstants;
+enum action_unsubscribe : uint8 { value = 0 }
+enum action_subscribe : uint8 { value = 1 }
+namespace fb.amrl_msgs;
+table RobofleetSubscription {
+  __metadata:fb.MsgMetadata;
+  topic_regex:string (required);
+  action:uint8;
+}
+namespace fb.std_msgs;
+table Header {
+  __metadata:fb.MsgMetadata;
+  seq:uint32;
+  stamp:RosTime (required);
+  frame_id:string (required);
+}
+namespace fb.amrl_msgs;
+table Pose2Df {
+  __metadata:fb.MsgMetadata;
+  x:float32;
+  y:float32;
+  theta:float32;
+}
+namespace fb.amrl_msgs;
+table Localization2DMsg {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  pose:fb.amrl_msgs.Pose2Df (required);
+  map:string (required);
+}
+namespace fb.amrl_msgs;
+table PathVisualization {
+  __metadata:fb.MsgMetadata;
+  curvature:float32;
+  distance:float32;
+  clearance:float32;
+}
+namespace fb.amrl_msgs;
+table Point2D {
+  __metadata:fb.MsgMetadata;
+  x:float32;
+  y:float32;
+}
+namespace fb.amrl_msgs;
+table ColoredPoint2D {
+  __metadata:fb.MsgMetadata;
+  point:fb.amrl_msgs.Point2D (required);
+  color:uint32;
+}
+namespace fb.amrl_msgs;
+table ColoredLine2D {
+  __metadata:fb.MsgMetadata;
+  p0:fb.amrl_msgs.Point2D (required);
+  p1:fb.amrl_msgs.Point2D (required);
+  color:uint32;
+}
+namespace fb.amrl_msgs;
+table ColoredArc2D {
+  __metadata:fb.MsgMetadata;
+  center:fb.amrl_msgs.Point2D (required);
+  radius:float32;
+  start_angle:float32;
+  end_angle:float32;
+  color:uint32;
+}
+namespace fb.amrl_msgs;
+table VisualizationMsg {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  ns:string (required);
+  particles:[fb.amrl_msgs.Pose2Df] (required);
+  path_options:[fb.amrl_msgs.PathVisualization] (required);
+  points:[fb.amrl_msgs.ColoredPoint2D] (required);
+  lines:[fb.amrl_msgs.ColoredLine2D] (required);
+  arcs:[fb.amrl_msgs.ColoredArc2D] (required);
+}
+namespace fb.sensor_msgs.NavSatStatusConstants;
+enum status_no_fix : int8 { value = -1 }
+enum status_fix : int8 { value = 0 }
+enum status_sbas_fix : int8 { value = 1 }
+enum status_gbas_fix : int8 { value = 2 }
+enum service_gps : uint16 { value = 1 }
+enum service_glonass : uint16 { value = 2 }
+enum service_compass : uint16 { value = 4 }
+enum service_galileo : uint16 { value = 8 }
+namespace fb.sensor_msgs;
+table NavSatStatus {
+  __metadata:fb.MsgMetadata;
+  status:int8;
+  service:uint16;
+}
+namespace fb.sensor_msgs.NavSatFixConstants;
+enum covariance_type_unknown : uint8 { value = 0 }
+enum covariance_type_approximated : uint8 { value = 1 }
+enum covariance_type_diagonal_known : uint8 { value = 2 }
+enum covariance_type_known : uint8 { value = 3 }
+namespace fb.sensor_msgs;
+table NavSatFix {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  status:fb.sensor_msgs.NavSatStatus (required);
+  latitude:float64;
+  longitude:float64;
+  altitude:float64;
+  position_covariance:[float64] (required);
+  position_covariance_type:uint8;
+}
+namespace fb.sensor_msgs;
+table LaserScan {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  angle_min:float32;
+  angle_max:float32;
+  angle_increment:float32;
+  time_increment:float32;
+  scan_time:float32;
+  range_min:float32;
+  range_max:float32;
+  ranges:[float32] (required);
+  intensities:[float32] (required);
+}
+namespace fb.sensor_msgs;
+table CompressedImage {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  format:string (required);
+  data:[uint8] (required);
+}
+namespace fb.geometry_msgs;
+table Point {
+  __metadata:fb.MsgMetadata;
+  x:float64;
+  y:float64;
+  z:float64;
+}
+namespace fb.geometry_msgs;
+table Quaternion {
+  __metadata:fb.MsgMetadata;
+  x:float64;
+  y:float64;
+  z:float64;
+  w:float64;
+}
+namespace fb.geometry_msgs;
+table Pose {
+  __metadata:fb.MsgMetadata;
+  position:fb.geometry_msgs.Point (required);
+  orientation:fb.geometry_msgs.Quaternion (required);
+}
+namespace fb.geometry_msgs;
+table PoseStamped {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  pose:fb.geometry_msgs.Pose (required);
+}
+namespace fb.geometry_msgs;
+table PoseWithCovariance {
+  __metadata:fb.MsgMetadata;
+  pose:fb.geometry_msgs.Pose (required);
+  covariance:[float64] (required);
+}
+namespace fb.geometry_msgs;
+table Vector3 {
+  __metadata:fb.MsgMetadata;
+  x:float64;
+  y:float64;
+  z:float64;
+}
+namespace fb.geometry_msgs;
+table Twist {
+  __metadata:fb.MsgMetadata;
+  linear:fb.geometry_msgs.Vector3 (required);
+  angular:fb.geometry_msgs.Vector3 (required);
+}
+namespace fb.geometry_msgs;
+table TwistWithCovariance {
+  __metadata:fb.MsgMetadata;
+  twist:fb.geometry_msgs.Twist (required);
+  covariance:[float64] (required);
+}
+namespace fb.nav_msgs;
+table Odometry {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  child_frame_id:string (required);
+  pose:fb.geometry_msgs.PoseWithCovariance (required);
+  twist:fb.geometry_msgs.TwistWithCovariance (required);
+}
