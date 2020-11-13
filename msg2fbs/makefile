@@ -7,6 +7,7 @@ MSG_TYPES=\
 	sensor_msgs/NavSatFix\
 	sensor_msgs/LaserScan\
 	sensor_msgs/CompressedImage\
+	sensor_msgs/PointCloud2\
 	geometry_msgs/PoseStamped\
 	nav_msgs/Odometry\
 # this line intentionally left blank
