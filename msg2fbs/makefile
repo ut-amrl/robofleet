@@ -2,6 +2,8 @@
 MSG_TYPES=\
 	amrl_msgs/RobofleetStatus\
 	amrl_msgs/RobofleetSubscription\
+	amrl_msgs/ElevatorStatus\
+	amrl_msgs/ElevatorCommand\
 	amrl_msgs/Localization2DMsg\
 	amrl_msgs/VisualizationMsg\
 	sensor_msgs/NavSatFix\
@@ -31,7 +33,7 @@ clean:
 
 .PHONY: update_schemas
 update_schemas: schema_generated.h schema_generated.ts
-	cp schema_generated.h ../robofleet_client/include
+	cp schema_generated.h ../robofleet_client/robofleet_client_lib/include
 	cp schema_generated.ts ../robofleet_server/src
 	cp schema_generated.ts ../robofleet_webviz/src
 

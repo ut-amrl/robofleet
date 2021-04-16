@@ -34,6 +34,23 @@ table RobofleetSubscription {
   topic_regex:string (required);
   action:uint8;
 }
+namespace fb.amrl_msgs.ElevatorStatusConstants;
+enum door_open : uint8 { value = 1 }
+enum door_closed : uint8 { value = 0 }
+enum door_transition : uint8 { value = 2 }
+enum floor_transition : uint8 { value = 0 }
+namespace fb.amrl_msgs;
+table ElevatorStatus {
+  __metadata:fb.MsgMetadata;
+  floor:uint8;
+  door:uint8;
+}
+namespace fb.amrl_msgs;
+table ElevatorCommand {
+  __metadata:fb.MsgMetadata;
+  floor_cmd:uint8;
+  hold_door:bool;
+}
 namespace fb.std_msgs;
 table Header {
   __metadata:fb.MsgMetadata;
@@ -152,6 +169,36 @@ table CompressedImage {
   header:fb.std_msgs.Header (required);
   format:string (required);
   data:[uint8] (required);
+}
+namespace fb.sensor_msgs.PointFieldConstants;
+enum int8 : uint8 { value = 1 }
+enum uint8 : uint8 { value = 2 }
+enum int16 : uint8 { value = 3 }
+enum uint16 : uint8 { value = 4 }
+enum int32 : uint8 { value = 5 }
+enum uint32 : uint8 { value = 6 }
+enum float32 : uint8 { value = 7 }
+enum float64 : uint8 { value = 8 }
+namespace fb.sensor_msgs;
+table PointField {
+  __metadata:fb.MsgMetadata;
+  name:string (required);
+  offset:uint32;
+  datatype:uint8;
+  count:uint32;
+}
+namespace fb.sensor_msgs;
+table PointCloud2 {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  height:uint32;
+  width:uint32;
+  fields:[fb.sensor_msgs.PointField] (required);
+  is_bigendian:bool;
+  point_step:uint32;
+  row_step:uint32;
+  data:[uint8] (required);
+  is_dense:bool;
 }
 namespace fb.geometry_msgs;
 table Point {
