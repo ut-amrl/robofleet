@@ -10,6 +10,7 @@ MSG_TYPES=\
 	sensor_msgs/LaserScan\
 	sensor_msgs/CompressedImage\
 	sensor_msgs/PointCloud2\
+	std_msgs/String\
 	geometry_msgs/PoseStamped\
 	nav_msgs/Odometry\
 # this line intentionally left blank

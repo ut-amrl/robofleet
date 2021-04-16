@@ -200,6 +200,11 @@ table PointCloud2 {
   data:[uint8] (required);
   is_dense:bool;
 }
+namespace fb.std_msgs;
+table String {
+  __metadata:fb.MsgMetadata;
+  data:string (required);
+}
 namespace fb.geometry_msgs;
 table Point {
   __metadata:fb.MsgMetadata;
