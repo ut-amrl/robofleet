@@ -2,7 +2,7 @@
 
 Robofleet_status is an example ROS package that can be built in a Catkin workspace.  It can be installed on a machine running [robofleet_client](https://github.com/ut-amrl/robofleet_client/tree/master), which is part of the [Robofleet communication architecture](https://github.com/ut-amrl/robofleet).
 
-Using the Robofleet communication architecture, robot clients communicate with a central [robofleet_server](https://github.com/ut-amrl/robofleet_server).  In addition, a web-based application, Webviz, visualizes robot client data.  A special message type, `amrl_msgs/RobofleetStatus`, is used by the Webviz to visualize this basic robot data.  This package can be added to a ROS catkin workspace and creates a rosnode called `robofleet_status` that publishes a `amrl_msgs/RobofleetStatus` message to a topic called `status`.
+Using the Robofleet communication architecture, robot clients communicate with a central [robofleet_server](https://github.com/ut-amrl/robofleet_server).  In addition, a web-based application, Webviz, visualizes robot client data.  A special message type, `amrl_msgs/RobofleetStatus`, is used by the Webviz to visualize this basic robot data.  This package can be added to a ROS catkin workspace and creates a rosnode called `robofleet_status` that publishes a `amrl_msgs/RobofleetStatus` message to a topic called `status`.  This package is designed to be simple enough that its contents could be integrated into a main robot ROS package.
 
 ## Dependencies
 
