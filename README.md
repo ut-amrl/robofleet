@@ -41,7 +41,7 @@ Make sure to clone submodules, using `git clone --recursive https://github.com/u
 
 ### Publish RobofleetStatus messages from a ROS node
 
-Some users may prefer to publish RobofleetStatus messages for the Webviz from a traditional ROS node built with Catkin. An example is provided: clone `robofleet_status` into a catkin workspace and follow the instructions in the `README`.
+Some users may prefer to publish RobofleetStatus messages for the Webviz from a traditional ROS node built with Catkin. An example is provided: move `robofleet_status` into a catkin workspace and follow the instructions in the `README`.
 
 ### Use the robot client and webviz without a central server
 
