@@ -13,7 +13,7 @@ Using the Robofleet communication architecture, robot clients communicate with a
 ## Installation and Configuration
 
 Instructions are for Ubuntu users:
-1. `git clone` this repository into a catkin workspace.
+1. Copy this robofleet_status directory into a catkin workspace.
 2. Edit the example `src/robofleet_status_node.cpp` to subscribe to messages specific to your robot, such as power data, and use the contents of those messages to complete the `status_msg`.
 3.  Edit the example `CMakeLists.txt` with the package dependencies for your robot's custom messages.
 4.  Edit the example `package.xml` with your build and exec dependencies.
@@ -32,7 +32,7 @@ and ROS should be running.  Ultimately it is ideal for these to be setup as serv
 
 * If ROS is not already started, open a terminal window and run the command `roscore`.
 
-* Start your robofleet_client connection from the `robofleet_client` directory: `ROS_NAMESPACE="robot_name" make run`
+* In a new bash window, start your robofleet_client connection from the `robofleet_client` directory: `ROS_NAMESPACE="robot_name" make run`
 
 * Your robot should be publishing messages on the topics you have used to build the RobofleetStatus message.
 If it is not, start the relevant nodes or spoof the messages using [rostopic pub](http://wiki.ros.org/rostopic).
