@@ -1,0 +1,19 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/nrg-vaultbot/catkin_ws/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/nrg-vaultbot/catkin_ws/src/fake_robot/include/**",
+        "/home/nrg-vaultbot/catkin_ws/src/myworkcell_core/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS"
+    }
+  ],
+  "version": 4
+}
