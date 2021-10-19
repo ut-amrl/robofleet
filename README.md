@@ -91,6 +91,12 @@ Imagine that you want to visualize some new message type, `my_viz/Marker`. First
 
 All done! Now, you can consume the new message type in `robofleet_webviz`, as well as transmit and receive it with the `robofleet_client`.
 
+## Additional Projects
+
+Robofleet is used as a part of a number of other projects, including an augmented reality interface powered by unreal engine:
+The source code for this client is available here:
+ - https://github.com/UTNuclearRoboticsPublic/RobofleetUnrealClient
+
 ## Future changes
 
 When JavaScript support for [Flexbuffers][flexbuffers] is [added][flexbuffers js], it would be possible to switch from Flatbuffers to Flexbuffers encoding with a mostly-unchanged architecture. This would:
