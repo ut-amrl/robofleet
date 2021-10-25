@@ -4,6 +4,7 @@ MSG_TYPES=\
 	amrl_msgs/RobofleetSubscription\
 	amrl_msgs/ElevatorStatus\
 	amrl_msgs/ElevatorCommand\
+	amrl_msgs/ErrorReport\
 	amrl_msgs/Localization2DMsg\
 	amrl_msgs/VisualizationMsg\
 	sensor_msgs/NavSatFix\
@@ -12,11 +13,12 @@ MSG_TYPES=\
 	sensor_msgs/PointCloud2\
 	std_msgs/String\
 	geometry_msgs/PoseStamped\
+	geometry_msgs/PoseWithCovarianceStamped\
 	nav_msgs/Odometry\
 # this line intentionally left blank
 
 # change this if your ROS install uses python 3
-PYTHON?=/usr/bin/python2
+PYTHON?=/usr/bin/python3
 
 # if you have flatbuffers installed, you can change this path
 FLATC?=build/flatbuffers/flatc
