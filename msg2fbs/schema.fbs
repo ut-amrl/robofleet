@@ -58,6 +58,25 @@ table Header {
   stamp:RosTime (required);
   frame_id:string (required);
 }
+namespace fb.amrl_msgs.ErrorReportConstants;
+enum info : uint8 { value = 0 }
+enum suboptimal : uint8 { value = 1 }
+enum risky : uint8 { value = 2 }
+enum catastrophic : uint8 { value = 3 }
+enum other : uint8 { value = 0 }
+enum localization : uint8 { value = 1 }
+enum navigation_perception : uint8 { value = 2 }
+enum navigation_local_planning : uint8 { value = 3 }
+enum navigation_global_planning : uint8 { value = 4 }
+namespace fb.amrl_msgs;
+table ErrorReport {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  laser_header:fb.std_msgs.Header (required);
+  severity_level:uint8;
+  failed_subsystem:uint8;
+  detailed_error_msg:string (required);
+}
 namespace fb.amrl_msgs;
 table Pose2Df {
   __metadata:fb.MsgMetadata;
@@ -237,6 +256,12 @@ table PoseWithCovariance {
   __metadata:fb.MsgMetadata;
   pose:fb.geometry_msgs.Pose (required);
   covariance:[float64] (required);
+}
+namespace fb.geometry_msgs;
+table PoseWithCovarianceStamped {
+  __metadata:fb.MsgMetadata;
+  header:fb.std_msgs.Header (required);
+  pose:fb.geometry_msgs.PoseWithCovariance (required);
 }
 namespace fb.geometry_msgs;
 table Vector3 {
