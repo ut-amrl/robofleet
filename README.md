@@ -63,8 +63,8 @@ Imagine that you want to visualize some new message type, `my_viz/Marker`. First
    2. Add the ROS name of the message type (e.g. `my_viz/Marker`) to the top of the `makefile`
    3. `make` to generate code and copy it into each Robofleet component.
 2. `cd ../robofleet_client`
-   1. Edit `src/config.hpp` to call `register_msg_type()` once per message type and topic, as shown in the example configuration. 
-      For example: `register_msg_type<my_viz::Marker>("/my/topic", "my/topic")`
+   1. Edit `src/config.hpp` to call `cn.configure()` once per message type and topic, as shown in the example configuration. 
+      For example: `c.configure(SendLocalMessage<my_viz::Marker>().from("/my/topic").to("my/topic"))`
       Remember to include the ROS headers for your new message type.
       * Make sure to read the inline documentation.
    2. Edit `encode.hpp` to specialize `encode<>()` for your new message type. See existing specializations for examples. 
