@@ -67,12 +67,12 @@ Imagine that you want to visualize some new message type, `my_viz/Marker`. First
       For example: `c.configure(SendLocalMessage<my_viz::Marker>().from("/my/topic").to("my/topic"))`
       Remember to include the ROS headers for your new message type.
       * Make sure to read the inline documentation.
-   2. Edit `encode.hpp` to specialize `encode<>()` for your new message type. See existing specializations for examples. 
+   2. Edit `encode_ros.hpp` to specialize `encode<>()` for your new message type. See existing specializations for examples. 
       * It helps to set up autocompletion in your editor.
       * Robofleet only uses the `metadata` attribute on the root message type. For example, if `my_viz/Marker` contains a `std_msgs/String`, you should set the `metadata` attribute of the `std_msgs/String` to `0` (null).
       * Remember that you can use `encode<>()` recursively using the provided helper functions.
       * Make sure to return the raw offset (the `.o` attribute) of your root message object.
-   3. Edit `decode.hpp` to specialize `decode<>()` for your new message type.
+   3. Edit `decode_ros.hpp` to specialize `decode<>()` for your new message type.
       * Again, you can decode recursively using provided helper functions.
    4. `make` to test your changes
       * Linker errors generally indicate that you did not correctly specialize `encode<>()` or `decode<>()`.
