@@ -2,8 +2,21 @@
 
 ![Overview diagram](https://github.com/ut-amrl/robofleet/blob/1fa0a7acb2895eed4e452c627a4d8cc2d26e241f/overview_diagram.png)
 
-This project is the implemntation of `Robofleet: Open Source Communication and Management for Fleets of Autonomous Robots` as presented at IROS 2021.
-The link to the original paper can be found here: https://arxiv.org/pdf/2103.06993
+This project is the implementation of `Robofleet: Open Source Communication and Management for Fleets of Autonomous Robots` as presented at IROS 2021.
+
+Citation:
+```
+@inproceedings{sikand2021robofleet,
+  title = {{ Robofleet: Secure Open Source Communication and Management for Fleets of Autonomous Robots }},
+  author = {   Kavan Singh Sikand and   Logan Zartman and   Sadegh Rabiee and   Joydeep Biswas },
+  booktitle = { Intelligent Robots and Systems (IROS), IEEE/RSJ International Conference on },
+  year = { 2021 },
+  pages = { 406--412 },
+  doi = { 10.1109/IROS51168.2021.9635830 },
+}
+```
+Arxiv link: https://arxiv.org/pdf/2103.06993
+IEEEXplore: https://ieeexplore.ieee.org/document/9635830
 
 This project aims to create a system that enables [ROS][ros]-based robot-to-robot communication, as well as visualization of robot data via a web-based frontend. Robots will run a client application to exchange data with a central server.
 
