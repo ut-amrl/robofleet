@@ -15,7 +15,7 @@ Citation:
   doi = { 10.1109/IROS51168.2021.9635830 },
 }
 ```
-Arxiv link: https://arxiv.org/pdf/2103.06993
+Arxiv link: https://arxiv.org/pdf/2103.06993   
 IEEEXplore: https://ieeexplore.ieee.org/document/9635830
 
 This project aims to create a system that enables [ROS][ros]-based robot-to-robot communication, as well as visualization of robot data via a web-based frontend. Robots will run a client application to exchange data with a central server.
