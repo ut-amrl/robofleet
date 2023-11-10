@@ -55,6 +55,10 @@ Make sure to clone submodules, using `git clone --recursive https://github.com/u
 1. Clone `robofleet_webviz` and follow the build instructions in its `README` file
 2. Run the development server with `yarn start`
 
+### Publish RobofleetStatus messages from a ROS node
+
+Some users may prefer to publish RobofleetStatus messages for the Webviz from a traditional ROS node built with Catkin. An example is provided: move `robofleet_status` into a catkin workspace and follow the instructions in the `README`.
+
 ### Use the robot client and webviz without a central server
 
 See information about "direct mode" in the `robofleet_client` `README`.
